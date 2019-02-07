@@ -15,4 +15,4 @@ BAD SPLICE FINDER
 
 4. run MyMaxEntScan.py
 
-`$ python PYTHON/MyMaxEntScan.py data.csv > enriched-data.csv` 
+`$ python PYTHON/MyMaxEntScan.py enriched-data.csv > final-data.csv` 
