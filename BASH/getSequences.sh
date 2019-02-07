@@ -9,6 +9,16 @@ INPUTFILE=data.csv
 
 OUTPUTFILE=enriched-data.csv
 
+if [ ! -f $INPUTFILE ]
+then
+	echo "input file $INPUTFILE does not exist - exiting!"
+	exit 1
+elif [ -f $OUTPUTFILE ]
+then
+	echo "output file $OUTPUTFILE already exists - exiting!"
+	exit 2
+fi
+
 
 # chrX-54837931-54838101,chrX:54838076-54838077,C,T,398,218,9,0,1180,623,24,4
 
@@ -43,6 +53,7 @@ do
 	wget -O /tmp/bob http://genome.ucsc.edu/cgi-bin/das/hg19/dna?segment=$coordinate > /dev/null 2>&1
 	sequence=$(awk '/\<DNA/,/\/DNA/ {print}' /tmp/bob | grep -v DNA | tr -d '[:space:]') 
 	echo ${line},${sequence} | sed 's/\-/\:/' >> $OUTPUTFILE
+	echo -n '#'
 done
 
 sed -i '' '1,1 s/$/sequence/' $OUTPUTFILE
