@@ -13,6 +13,10 @@ BAD SPLICE FINDER
 
 `$ BASH/getSequences.sh`
 
-4. run MyMaxEntScan.py
+4. get 5' and 3' splice site scores in neighborhood of mutation 
 
 `$ python PYTHON/MyMaxEntScan.py enriched-data.csv > final-data.csv` 
+
+5. build predictive model using logistic regression and random forest
+
+`$ R R/binary_model_selection.R` 
