@@ -3,9 +3,13 @@ library(readr)
 ##############
 # Prepare data
 ##############
+# parse command-line args
+#args <- commandArgs(TRUE)
+#inputFile <- args[1]
 # read in data from CSV
-assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data-with-best-skippy-features.csv")
-#assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data.csv")
+#assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data-with-best-skippy-features.csv")
+assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data.csv")
+#assaysDF <- read_csv(inputFile)
 # calculate ratio of in vivo mutated spliced/total (efficiency)
 assaysDF$spliceRatio_mut_vivo <- assaysDF$in_vivo_ms / (assaysDF$in_vivo_ms + assaysDF$in_vivo_mu)
 assaysDF$spliceRatio_wt_vivo <- assaysDF$in_vivo_ws / (assaysDF$in_vivo_ws + assaysDF$in_vivo_wu)
@@ -61,7 +65,7 @@ onlySkippy <-  c("logoddsratio", "exonlen", "deltaSS3", "deltaSS5")
 #####################
 # logistic regression
 #####################
-formulaString <- paste(y, paste(bestCombo, collapse="+"), sep="~")
+formulaString <- paste(y, paste(onlyMaxent, collapse="+"), sep="~")
 LRmodel <- glm(formulaString, data=trainingData, family=binomial(link="logit"))
 # make predictions using model
 trainingData$prediction <- predict(LRmodel, newdata=trainingData, type="response")
@@ -96,13 +100,13 @@ summary(LRmodel)
 ###############
 library(randomForest)
 set.seed(5123512)
-x <- labeledAllFiniteScores[bestCombo]
+x <- labeledAllFiniteScores[onlyMaxent]
 y <- as.factor(labeledAllFiniteScores$label_vivo)
 RFmodel <- randomForest(x=x, y=y, ntree=100, nodesize=7, importance=TRUE)
 print(RFmodel)
 varImp <- importance(RFmodel)
 varImp
-varImp[1:8,]
+varImp[1:4,]
 varImpPlot(RFmodel, type=1)
 RFmodel$confusion
 RFmodel$classes

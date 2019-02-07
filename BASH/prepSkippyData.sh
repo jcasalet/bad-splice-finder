@@ -14,8 +14,8 @@ then
 	exit 2
 fi
 
-# labeled-data.csv
-# "","lib_hg19","sequence","mut_coord","allele_w","allele_m","wt5score","mu5score","wt3score","mu3score","l2fcSpliceRatio","label"
+# final-data.csv
+# "","lib_hg19","sequence","mut_coord","allele_w","allele_m","wt5score","mu5score","wt3score","mu3score"
 
 # skippy-input.txt
 # chr3 37083775 C T

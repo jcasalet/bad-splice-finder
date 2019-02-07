@@ -19,4 +19,6 @@ BAD SPLICE FINDER
 
 5. build predictive model using logistic regression and random forest
 
-`$ R R/binary_model_selection.R` 
+`$ Rscript R/binary_model_selection.R final-data.csv` 
+
+OR run the script in RStudio to see the graphs.
