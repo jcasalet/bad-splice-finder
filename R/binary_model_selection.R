@@ -7,8 +7,8 @@ library(readr)
 #args <- commandArgs(TRUE)
 #inputFile <- args[1]
 # read in data from CSV
-#assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data-with-best-skippy-features.csv")
-assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data.csv")
+assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data-with-best-skippy-features.csv")
+#assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data.csv")
 #assaysDF <- read_csv(inputFile)
 # calculate ratio of in vivo mutated spliced/total (efficiency)
 assaysDF$spliceRatio_mut_vivo <- assaysDF$in_vivo_ms / (assaysDF$in_vivo_ms + assaysDF$in_vivo_mu)
