@@ -1,13 +1,19 @@
 #!/bin/bash
 
-PAD_5PRIME=15
-PAD_3PRIME=55
+# SKIP PADS!!!
+# "upstream" = 5 prime end
+# "downstream" = 3 prime end
+# Mutations were mapped to internal exons ≤ 100 nucleotides in length and selected for those that fit into 170 nucleotide genomic windows, which include 15 nucleotides of downstream intronic sequence and ≥ 55 nucleotides of upstream intronic sequence
+#PAD_5PRIME=55
+#PAD_3PRIME=15
+PAD_5PRIME=0
+PAD_3PRIME=0
 
 
 
 INPUTFILE=../DATA/data.csv
 
-OUTPUTFILE=../DATA/enriched-data.csv
+OUTPUTFILE=../DATA/data-with-sequences.csv
 
 if [ ! -f $INPUTFILE ]
 then
@@ -50,7 +56,7 @@ do
 	((end_coord=$end_coord - $PAD_3PRIME))
 	chr=$(echo $orig_coordinate | cut -d: -f1) 
 	coordinate=${chr}:${start_coord},${end_coord}
-	wget -O /tmp/bob http://genome.ucsc.edu/cgi-bin/das/hg19/dna?segment=$coordinate > /dev/null 2>&1
+	wget -q -o /dev/null -O /tmp/bob http://genome.ucsc.edu/cgi-bin/das/hg19/dna?segment=$coordinate > /dev/null 2>&1
 	sequence=$(awk '/\<DNA/,/\/DNA/ {print}' /tmp/bob | grep -v DNA | tr -d '[:space:]') 
 	echo ${line},${sequence} | sed 's/\-/\:/' >> $OUTPUTFILE
 	echo -n '#'

@@ -83,7 +83,7 @@ class SpliceSiteScores:
                 wtSequenceScore = maxent.score5(wtSequence, matrix5)
                 muSequenceScore = maxent.score5(muSequence, matrix5)
             except:
-                sys.stderr.write("maxent failure")
+                #sys.stderr.write("maxent failure")
                 continue
             if(wtSequenceScore > wtMaxScore):
                 wtMaxScore = wtSequenceScore
@@ -117,7 +117,7 @@ class SpliceSiteScores:
                 wtSequenceScore = maxent.score3(wtSequence, matrix3)
                 muSequenceScore = maxent.score3(muSequence, matrix3)
             except:
-                sys.stderr.write("maxent failure")
+                #sys.stderr.write("maxent failure")
                 continue
             if(wtSequenceScore > wtMaxScore):
                 wtMaxScore = wtSequenceScore
