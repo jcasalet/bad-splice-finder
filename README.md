@@ -17,8 +17,3 @@ BAD SPLICE FINDER
 
 `$ PYTHON/MyMaxEntScan.py data-with-sequences.csv > data-with-maxentscan.csv` 
 
-5. build predictive model using logistic regression and random forest
-
-`$ Rscript R/binary_model_selection.R data-with-maxentscan.csv` 
-
-OR run the script in RStudio to see the graphs.
