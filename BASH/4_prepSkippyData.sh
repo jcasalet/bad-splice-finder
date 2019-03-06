@@ -5,7 +5,7 @@ POSITION=1_NUMBERING
 
 if [ $# -ne 1 ]
 then
-	echo "usage: $0 <input>" 
+	echo "usage: $0 <data-with-maxentscan.csv>" 
 	exit 1
 fi
 
