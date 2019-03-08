@@ -2,7 +2,7 @@
   
 if [ $# -ne 3 ]
 then
-        echo "usage: $0 <skippy-in> <data-with-maxentscan-in> <problematic-results-out>"
+        echo "usage: $0 <skippy-output> <data-with-maxentscan.csv> <problematic-results-out>"
         exit 1
 fi
 
@@ -53,4 +53,4 @@ done < "$1"
 #lib_hg19,mut_coord,allele_w,allele_m,in_vivo_wu,in_vivo_mu,in_vivo_ws,in_vivo_ms,vit_wu,vit_mu,vit_ws,vit_ms,sequence,wt5start,wt5sequence,wt5score,mu5start,mu5sequence,mu5score,wt3start,wt3sequence,wt3score,mu3start,mu3sequence,mu3score,lor,exonlen,fivePrimeSSscore,threePrimeSSscore,deltaSS3,deltaSS5
 
 # sample output from this script (30 fields)
-chr2:189854936-189855106,chr2:189855033-189855034,G,A,2345,322,3520,484,2535,258,9624,1388,acttaaaaacagaaagtgttttactactagattgtgattctatttgaaggttcattaatattttttcattcattatttttagggtatcaaaggtccagctg,189855025,aaggtccag,-1.3012874202034164,189855025,aaggtccaa,-1.9967689952451928,189855014,ttagggtatcaaaggtccagctg,-6.214633523023855,189855014,ttagggtatcaaaggtccaactg,-14.965012826743692,0,54,0.591,9.35,10.55,1
+#chr2:189854936-189855106,chr2:189855033-189855034,G,A,2345,322,3520,484,2535,258,9624,1388,acttaaaaacagaaagtgttttactactagattgtgattctatttgaaggttcattaatattttttcattcattatttttagggtatcaaaggtccagctg,189855025,aaggtccag,-1.3012874202034164,189855025,aaggtccaa,-1.9967689952451928,189855014,ttagggtatcaaaggtccagctg,-6.214633523023855,189855014,ttagggtatcaaaggtccaactg,-14.965012826743692,0,54,0.591,9.35,10.55,1

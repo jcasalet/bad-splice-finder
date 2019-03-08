@@ -37,7 +37,7 @@ class SpliceSiteScores:
             else:
                 splitLine = line.strip().split(',')
                 sequenceStart = int(splitLine[0].split(":")[1].split("-")[0])
-                mutationStart = int(splitLine[1].split(":")[1].split("-")[0])
+                mutationStart = int(splitLine[1].split(":")[1].split("-")[1])
                 mutationTuple = (splitLine[2], splitLine[3])
                 matrix5 = maxent.load_matrix5()
                 self.fivePrimeSites[splitLine[0]] = self.check5Prime(splitLine[12].strip(), self.fivePrimeSiteLength,
@@ -70,14 +70,13 @@ class SpliceSiteScores:
         wtMaxSequence = None
         muMaxSequence = None
         mutationOffset = mutationStart - sequenceStart
-        mutatedSequence = sequence[:mutationOffset] + mutationTuple[1].lower() + sequence[mutationOffset+1:]
+        mutatedSequence = sequence[:mutationOffset] + mutationTuple[1].upper() + sequence[mutationOffset+1:]
 
-        for i in range(length, 0, -1):
+        for i in range(length, -1, -1):
             start = mutationOffset - i
             end = start + length
-            if (end - start) != length:
-                continue
-            wtSequence = sequence[start:end]
+            #wtSequence = sequence[start:end]
+            wtSequence = sequence[start:mutationOffset] + mutationTuple[0].upper() + sequence[mutationOffset+1:end]
             muSequence = mutatedSequence[start:end].strip()
             try:
                 wtSequenceScore = maxent.score5(wtSequence, matrix5)
@@ -104,14 +103,13 @@ class SpliceSiteScores:
         wtMaxSequence = None
         muMaxSequence = None
         mutationOffset = mutationStart - sequenceStart
-        mutatedSequence = sequence[:mutationOffset] + mutationTuple[1].lower() + sequence[mutationOffset+1:]
+        mutatedSequence = sequence[:mutationOffset] + mutationTuple[1].upper() + sequence[mutationOffset+1:]
 
-        for i in range(length, 0, -1):
+        for i in range(length, -1, -1):
             start = mutationOffset - i
             end = start + length
-            if (end - start) != length:
-                continue
-            wtSequence = sequence[start:end]
+            #wtSequence = sequence[start:end]
+            wtSequence = sequence[start:mutationOffset] + mutationTuple[0].upper() + sequence[mutationOffset+1:end]
             muSequence = mutatedSequence[start:end].strip()
             try:
                 wtSequenceScore = maxent.score3(wtSequence, matrix3)
