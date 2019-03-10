@@ -3,8 +3,7 @@ library(readr)
 # Prepare data
 ##################
 # read in data from CSV
-#assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data.csv")
-assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/final-data-with-best-skippy-features.csv")
+assaysDF <- read_csv("/Users/jcasaletto/Desktop/GRAD_SCHOOL/UCSC/WINTER_2019/ROTATION/DATA/data-with-skippy.csv")
 # determine if any 0's in denominators (no splicing)
 noSplicingAtAll <- subset(assaysDF, (in_vivo_ms + in_vivo_ws) ==0)
 noMutatedSplicing <- subset(assaysDF, (in_vivo_ms == 0) & (in_vivo_ws !=0))
@@ -28,11 +27,22 @@ assaysDF$spliceRatio_wt_vitro <- assaysDF$vit_ws / (assaysDF$vit_ws + assaysDF$v
 assaysDF$l2fcSpliceRatio_vitro <- log(assaysDF$spliceRatio_mut_vitro/assaysDF$spliceRatio_wt_vitro)
 # filter out unnecessary columns
 #varsOfInterest <- c("wt5score", "mu5score", "wt3score", "mu3score", "l2fcSpliceRatio_vivo")
-varsOfInterest <- c("wt5score", "mu5score", "wt3score", "mu3score", "l2fcSpliceRatio_vivo", "l2fcSpliceRatio_vitro", "logoddsratio", "exonlen", "deltaSS3","deltaSS5")
+varsOfInterest <- c("wt5score", "mu5score", "wt3score", "mu3score", "l2fcSpliceRatio_vivo", "l2fcSpliceRatio_vitro", "lor", "exonlen", "deltaSS3","deltaSS5")
 spliceScoresWithL2FC <- assaysDF[varsOfInterest]
 # filter out rows with NA, Inf, or -Inf in any field
 allScores <- spliceScoresWithL2FC[is.finite(rowSums(spliceScoresWithL2FC)),]
 allFiniteScores <- allScores[complete.cases(allScores),]
+
+
+# filter out scores with identical wt=mu 5' and 3'
+allUnique5Scores <- allFiniteScores[allFiniteScores$wt5score != allFiniteScores$mu5score,]
+allUniqueScores <- allUnique5Scores[allUnique5Scores$wt3score != allUnique5Scores$mu3score,]
+allUniqueScores
+
+
+allUniqueScores_5diff <- transform(allUniqueScores, diff_5 = abs(wt5score - mu5score))
+allUniqueScores <- allUniqueScores_5diff <- transform(allUniqueScores_5diff, diff_3 = abs(wt3score - mu3score))
+
 # normalize data
 normalize <- function(df) {
   for(col in colnames(df)) {
@@ -45,15 +55,15 @@ normalize <- function(df) {
   }
   return (df)
 }
-allFiniteScoresNormalized <- normalize(allFiniteScores)
+allFiniteScoresNormalized <- normalize(allUniqueScores)
 # label each data point as 0 or 1 
 labeledAllFiniteScores = within(allFiniteScoresNormalized, {
-  label_vivo = ifelse(l2fcSpliceRatio_vivo > 1 , 1, ifelse(l2fcSpliceRatio_vivo < -1, -1, 0))
+  label_vivo = ifelse(l2fcSpliceRatio_vivo > 0.1 , 1, ifelse(l2fcSpliceRatio_vivo < -0.1, -1, 0))
 })
 
-enhancedSubset <- subset(labeledAllFiniteScores, l2fcSpliceRatio_vivo > 1)
-suppressedSubset <- subset(labeledAllFiniteScores, l2fcSpliceRatio_vivo < -1)
-neutralSubset <- subset(labeledAllFiniteScores, l2fcSpliceRatio_vivo >= -1 & l2fcSpliceRatio_vivo <= 1)
+enhancedSubset <- subset(labeledAllFiniteScores, l2fcSpliceRatio_vivo > 0.1)
+suppressedSubset <- subset(labeledAllFiniteScores, l2fcSpliceRatio_vivo < -0.1)
+neutralSubset <- subset(labeledAllFiniteScores, l2fcSpliceRatio_vivo >= -0.1 & l2fcSpliceRatio_vivo <= 0.1)
 nrow(enhancedSubset)
 nrow(suppressedSubset)
 nrow(neutralSubset)
@@ -72,20 +82,20 @@ testingData <- subset(labeledAllFiniteScores, sample == 0)
 # build logistic regression model
 y <- "label_vivo"
 
-x1 <- c("wt5score", "mu5score", "wt3score", "mu3score", "l2fcSpliceRatio_vivo", "l2fcSpliceRatio_vitro", "logoddsratio", "exonlen", "deltaSS3",
-  "deltaSS5")
+allScores <- c("wt5score", "mu5score", "wt3score", "mu3score",  "lor", "exonlen", "deltaSS3", "deltaSS5")
 
-x2 <- c("wt5score", "mu5score", "wt3score", "mu3score", "logoddsratio", "exonlen", "deltaSS3", "deltaSS5")
+onlyMaxent <- c("wt5score", "mu5score", "wt3score", "mu3score")
 
-x3 <- c("mu5score", "mu3score", "logoddsratio", "exonlen", "deltaSS3", "deltaSS5")
+onlySkippy <- c( "lor", "exonlen", "deltaSS3", "deltaSS5")
 
-x4 <-  c("wt5score", "mu5score", "wt3score", "mu3score")
+all3 <-  c("wt3score", "mu3score", "deltaSS3")
 
-x5 <-  c("logoddsratio", "exonlen", "deltaSS3", "deltaSS5")
+all5 <-  c("wt5score", "mu5score", "deltaSS5")
 
-x6 <- c("wt5score", "mu5score", "wt3score", "mu3score", "logoddsratio", "exonlen")
+best <- c("deltaSS3", "exonlen")
+all <- c("wt5score", "mu5score", "wt3score", "mu3score","lor", "exonlen", "deltaSS3", "deltaSS5", "diff_3", "diff_5")
+bestCombo <- c("mu3score", "wt3score", "exonlen", "diff_5", "diff_3")
 
-x7 <- c("mu5score", "mu3score", "logoddsratio", "exonlen")
 
 
 
@@ -95,9 +105,7 @@ x7 <- c("mu5score", "mu3score", "logoddsratio", "exonlen")
 ###############
 library(randomForest)
 set.seed(5123512)
-#x <- trainingData[x2]
-x <- labeledAllFiniteScores[x2]
-#y <- as.factor(trainingData$label_vivo)
+x <- labeledAllFiniteScores[bestCombo]
 y <- as.factor(labeledAllFiniteScores$label_vivo)
 RFmodel <- randomForest(x=x, y=y, ntree=100, nodesize=7, importance=TRUE)
 print(RFmodel)
