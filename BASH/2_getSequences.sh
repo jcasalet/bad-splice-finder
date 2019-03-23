@@ -1,13 +1,12 @@
 #!/bin/bash
 
-# SKIP PADS!!!
 # "upstream" = 5 prime end
 # "downstream" = 3 prime end
 # Mutations were mapped to internal exons ≤ 100 nucleotides in length and selected for those that fit into 170 nucleotide genomic windows, which include 15 nucleotides of downstream intronic sequence and ≥ 55 nucleotides of upstream intronic sequence
-#PAD_5PRIME=55
-#PAD_3PRIME=15
-PAD_5PRIME=0
-PAD_3PRIME=0
+PAD_5PRIME=55
+PAD_3PRIME=15
+#PAD_5PRIME=0
+#PAD_3PRIME=0
 
 
 

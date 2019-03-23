@@ -12,6 +12,6 @@ fi
 while IFS='' read -r line || [[ -n "$line" ]]; do
 	echo $line > $TEMPFILE 
 	#${SKIPPY_HOME}/score_Skippy_75.pl -build hg19 -score_ectopic -positive_strand $TEMPFILE
-	${SKIPPY_HOME}/score_Skippy_75.pl -build hg19 -positive_strand $TEMPFILE | grep internal_exon_protein_coding
+	${SKIPPY_HOME}/score_Skippy_75.pl -build hg19 -positive_strand $TEMPFILE
 	rm $TEMPFILE
 done < "$1"

@@ -1,20 +1,41 @@
-#!/bin/bash
+#!/bin/bash 
   
 if [ $# -ne 3 ]
 then
-        echo "usage: $0 <skippy-output> <data-with-maxentscan.csv> <problematic-results-out>"
+        echo "usage: $0 <skippy-out> <data-with-maxentscan> <skippy-problematic-out>"
         exit 1
 fi
+
+SKIPPY_OUT=$1
+DATA_MAXENT=$2
+PROBLEM_DATA=$3
+
+TS=$(date +%s)
+# only look at "multiple" records
+
+grep multiple $PROBLEM_DATA > /tmp/${TS}-multiple
+
+# of those multiple records, only look at internal_exon_protein_coding
+
+for line in $(sed -n '1,$ p' /tmp/${TS}-multiple)
+do
+	# found multiple times in ../DATA/skippy-output.txt: chr3\t130714955\tC->T
+	#LOCUS=$(echo $line | awk -Ft '{print $2}')
+	LOCUS=$(echo $line | awk -F: '{print $3}' | cut -dt -f2 | cut -d\\ -f1) 
+	CODING_LINE=$(grep $LOCUS $SKIPPY_OUT | grep internal_exon_protein_coding) 
+	echo $CODING_LINE >> /tmp/${TS}-skippy
+done
+
+# hack: uniq-ify skippy lines :(
+
+cat /tmp/${TS}-skippy | uniq > /tmp/${TS}-skippy-uniq
+
+# then process as before 
 
 # print header
 echo "lib_hg19,mut_coord,allele_w,allele_m,in_vivo_wu,in_vivo_mu,in_vivo_ws,in_vivo_ms,vit_wu,vit_mu,vit_ws,vit_ms,sequence,wt5start,wt5sequence,wt5score,mu5start,mu5sequence,mu5score,wt3start,wt3sequence,wt3score,mu3start,mu3sequence,mu3score,lor,exonlen,fivePrimeSSscore,threePrimeSSscore,deltaSS3,deltaSS5"
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-	if [ $(echo $line | grep -c -v internal) -eq 0 ]
-	then
-		echo not_internal_exon: $line >> $3
-		continue
-	fi
         lor=$(echo $line | awk '{print $17}')
 	exonlen=$(echo $line | awk '{print $10}')
 	fivePrimeSSscore=$(echo $line | awk '{print $23}')
@@ -30,18 +51,15 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
 	searchMaxEntString="$chr:$locminus1-$loc,$x,$y"
 	# chr20   49565187        C->G 
 	searchSkippyString="$chr\t$loc\t$x->$y"	
-	if [ $(grep -c $searchSkippyString $1) -eq 0 ]
-	then
-		echo "not_found_in $1: $searchSkippyString" >> $3
-	elif [ $(grep -c $searchSkippyString $1) -gt 1 ]
-	then
-		echo "found_multiple_times_in:${1}:${searchSkippyString}" >> $3
-	else
-		thisLine=$(grep $searchMaxEntString $2)
-		echo ${thisLine},$lor,$exonlen,$fivePrimeSSscore,$threePrimeSSscore,$deltaSS3,$deltaSS5
+	thisLine=$(grep $searchMaxEntString $DATA_MAXENT)
+	echo ${thisLine},$lor,$exonlen,$fivePrimeSSscore,$threePrimeSSscore,$deltaSS3,$deltaSS5
 
-	fi	 
-done < "$1"
+done < "/tmp/${TS}-skippy-uniq"
+
+rm -f /tmp/${TS}-multiple
+rm -f /tmp/${TS}-internal
+rm -f /tmp/${TS}-skippy
+rm -f /tmp/${TS}-skippy-uniq
 
 # maxentscan header 
 #lib_hg19,mut_coord,allele_w,allele_m,in_vivo_wu,in_vivo_mu,in_vivo_ws,in_vivo_ms,vit_wu,vit_mu,vit_ws,vit_ms,sequence,wt5start,wt5sequence,wt5score,mu5start,mu5sequence,mu5score,wt3start,wt3sequence,wt3score,mu3start,mu3sequence,mu3score
